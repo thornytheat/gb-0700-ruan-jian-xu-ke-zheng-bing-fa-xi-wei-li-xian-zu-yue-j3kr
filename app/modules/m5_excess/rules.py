@@ -14,12 +14,13 @@ def allocate_excess(active,extra):
     return charged
 
 def apply(ctx):
-    out=[];capacities=[r for r in ctx["normalized"] if r["kind"]=="capacity"]
+    out=[];capacities=[r for r in ctx["normalized"] if r["kind"]=="capacity"];windows=ctx["failover"]["windows"]
     for segment in ctx["segments"]:
         product=segment["product"];caps=[r for r in capacities if r["canonical"]==product]
         cuts=sorted({segment["a"],segment["b"]}|{r[k] for r in caps for k in ("a","b") if segment["a"]<r[k]<segment["b"]})
         for a,b in zip(cuts,cuts[1:]):
             capacity,conflict=capacity_at(caps,a);extra=max(0,segment["count"]-capacity)
             active=[r for r in ctx["leases"] if r["canonical"]==product and r["a"]<=a<r["b"]]
-            out.append({"product":product,"a":a,"b":b,"concurrent":segment["count"],"capacity":capacity,"excess":extra,"offenders":allocate_excess(active,extra),"status":"CAPACITY_CONFLICT" if conflict else "OVERUSE" if extra else "PASS"})
-    ctx["usage"]=out;return report(out,超用区间=sum(r["excess"]>0 for r in out),冲突=sum(r["status"]=="CAPACITY_CONFLICT" for r in out))
+            switchover=any(w["product"]==product and w["a"]<b and a<w["b"] for w in windows)
+            out.append({"product":product,"a":a,"b":b,"concurrent":segment["count"],"capacity":capacity,"excess":extra,"offenders":allocate_excess(active,extra),"failover":switchover,"status":"CAPACITY_CONFLICT" if conflict else "OVERUSE" if extra else "PASS"})
+    ctx["usage"]=out;return report(out,超用区间=sum(r["excess"]>0 for r in out),冲突=sum(r["status"]=="CAPACITY_CONFLICT" for r in out),切换期超用=sum(r["excess"]>0 and r["failover"] for r in out))

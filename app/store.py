@@ -13,8 +13,12 @@ def connect():
 def save(text, result):
     digest=hashlib.sha256((RULE_VERSION+"\n"+text).encode()).hexdigest()
     ident=digest[:16]
-    with connect() as db:
-        db.execute("INSERT OR IGNORE INTO runs(id,digest,result,created) VALUES(?,?,?,?)",(ident,digest,json.dumps(dict(result,rule_version=RULE_VERSION),ensure_ascii=False),datetime.now(timezone.utc).isoformat()))
+    payload=json.dumps(dict(result,rule_version=RULE_VERSION),ensure_ascii=False)
+    try:
+        with connect() as db:
+            db.execute("INSERT OR IGNORE INTO runs(id,digest,result,created) VALUES(?,?,?,?)",(ident,digest,payload,datetime.now(timezone.utc).isoformat()))
+    except sqlite3.Error:
+        raise BusinessError("STORE","结果写入失败，已保留旧版",500)
     return get(ident)
 
 def get(ident):

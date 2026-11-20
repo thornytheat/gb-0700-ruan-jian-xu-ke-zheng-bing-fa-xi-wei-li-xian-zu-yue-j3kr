@@ -8,4 +8,4 @@ def reject_stale(current,proposed):
 def apply(ctx):
     ctx["final"]=[dict(r,start=display(r["a"]),end=display(r["b"])) for r in ctx["usage"] if r["status"]!="PASS"]
     ctx["blocked"]=bool(ctx["final"])
-    return report(ctx["lease_audit"],忽略心跳=sum(r["reason"]=="HEARTBEAT_NO_SEAT" for r in ctx["lease_audit"]),离线释放保留=sum(r["reason"]=="OFFLINE_UNTIL_EXPIRY" for r in ctx["lease_audit"]))
+    return report(ctx["lease_audit"],忽略心跳=sum(r["reason"]=="HEARTBEAT_NO_SEAT" for r in ctx["lease_audit"]),离线释放保留=sum(r["reason"]=="OFFLINE_UNTIL_EXPIRY" for r in ctx["lease_audit"]),切换合并=sum(r["reason"]=="FAILOVER_MERGED" for r in ctx["lease_audit"]))

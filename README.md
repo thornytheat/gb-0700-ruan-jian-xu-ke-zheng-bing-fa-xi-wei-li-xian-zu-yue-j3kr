@@ -4,7 +4,7 @@
 
 ## 核心计算
 
-按租约有效区间扫线统计并发，同刻先结束后开始；离线到期前始终占席，重复心跳不重复占用。
+按租约有效区间扫线统计并发，同刻先结束后开始；离线到期前始终占席，重复心跳不重复占用。主备切换期双源记账按声明窗口裁决合并，来源与真实超用可解释，原始事件可追回。
 
 ## 启动
 
@@ -14,7 +14,7 @@ docker compose exec -T app pytest -q
 docker compose config --quiet
 ```
 
-浏览器访问 http://localhost:18214 。默认载入仓内样例。工具条可选择CSV文件运行；样例文件位于 `sample_data/instrument.csv`。重复执行同一内容复用同一批次。
+浏览器访问 http://localhost:18214 。默认载入仓内样例。工具条可选择CSV文件运行；样例文件位于 `sample_data/instrument.csv`，主备切换场景见 `sample_data/failover.csv`（可选第9列source）。重复执行同一内容复用同一批次；结果写入失败保留旧版。
 
 ## 模块
 

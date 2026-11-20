@@ -27,6 +27,11 @@
 | TRAP-19 | 采购版冲突 | 静默采信错误值 | 显式版本优先级 | `app/modules/m5_excess/rules.py` | `tests/test_excess.py::test_excess_capacity_version` |
 | TRAP-23 | 同刻交接 | 静默采信错误值 | 先结束后开始 | `app/modules/m4_concurrency/rules.py` | `tests/test_concurrency.py::test_sweep_boundary` |
 | TRAP-26 | 陈旧补传 | 静默采信错误值 | 递增版本 | `app/modules/m7_audit/rules.py` | `tests/test_audit.py::test_audit_stale` |
+| TRAP-31 | 主备双记 | 切换期峰值被抬高 | 声明窗口内同段使用双源合并 | `app/modules/m3_leases/rules.py` | `tests/test_failover.py::test_failover_real_vs_inflated_peak` |
+| TRAP-32 | 只信主服务 | 漏掉备侧实际承接 | 单侧记录独立计席 | `app/modules/m3_leases/rules.py` | `tests/test_failover.py::test_failover_standby_only_user_kept` |
+| TRAP-33 | 合并丢记录 | 原始事件不可追回 | origins保留双侧行号 | `app/modules/m3_leases/rules.py` | `tests/test_failover.py::test_failover_export_traces_original_lines` |
+| TRAP-34 | 切换批次重试 | 重复记账新增占用 | 行内去重+批次复用 | `app/modules/m1_sessions/rules.py`、`app/store.py` | `tests/test_failover.py::test_failover_rerun_reuses_same_batch` |
+| TRAP-35 | 写入半途失败 | 旧结果被截断 | 先序列化后写入，失败回滚 | `app/store.py` | `tests/test_failover.py::test_store_write_failure_keeps_old_version` |
 
 ## 对账规则
 
